@@ -9,6 +9,7 @@ import numpy as np
 import pmcrawl as P
 import itertools
 import pyexcel as px
+import time
 
 
 class ChemCrawler:
@@ -17,22 +18,23 @@ class ChemCrawler:
         self.chem_json_list, self.chem_list, self.name_dict = self.process_pubmed_chem_info(keyword)
         self.chem_matrix = self.process_matrix()
 
-    def make_xlsx_single_chem(self, outfile=None):
+    def make_csv_single_chem(self, outfile=None):
         if not outfile:
-            outfile = "frequency_" + self.keyword + ".xlsx"
-        header = ["Compound ID", "Name", "Frequency"]
+            outfile = "[frequency]" + self.keyword + ".csv"
+        header = "Compound ID, Name, Frequency"
 
-        contents = []
-        contents.append(header)
+        ofile = open(outfile, 'w')
+        ofile.write(header)
+
         for i in range(len(self.chem_list)):
             compound_id = self.chem_list[i]
-            name = self.name_dict[compound_id]
-            frequency = self.chem_matrix[i, i]
-            contents.append([compound_id, name, frequency])
+            name = self.name_dict[compound_id].replace(",", "*")
+            frequency = str(self.chem_matrix[i, i])
+            ofile.write("\n" + compound_id + ", " + name + ", " + frequency)
 
-        px.save_as(array=contents, dset_file_name=outfile)
+        ofile.close()
 
-        print("Result Saved as an XLSX File")
+        print("Result Saved as a CSV File")
 
     def process_matrix(self):
         num_chem = len(self.chem_list)
@@ -54,7 +56,7 @@ class ChemCrawler:
         return matrix
 
     def process_pubmed_chem_info(self, keyword):
-        chem_json_list = P.crawl_chem_json(keyword)
+        chem_json_list = P.crawl_chem_json(keyword, silence=True)
         chem_list = []
         name_dict = {}
 

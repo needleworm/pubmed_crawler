@@ -18,7 +18,7 @@ def remove_escape(string):
     return retval
 
 
-def crawl_chem_json(keyword, retmax=1000):
+def crawl_chem_json(keyword, retmax=1000, silence=False):
     fetch = PubMedFetcher()
 
     pmids = fetch.pmids_for_query(keyword, retmax=retmax)
@@ -34,8 +34,8 @@ def crawl_chem_json(keyword, retmax=1000):
         chemical = article.chemicals
         if not chemical:
             continue
-
-        print(str(chemical) + "\n")
+        if not silence:
+            print(str(chemical) + "\n")
 
         json_dicts.append(chemical)
 
