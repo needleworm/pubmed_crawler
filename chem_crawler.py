@@ -8,19 +8,21 @@ halfbottle@sangsang.farm
 import numpy as np
 import pmcrawl as P
 import itertools
-import pyexcel as px
-import time
 
 
 class ChemCrawler:
     def __init__(self, keyword):
         self.keyword = keyword
-        self.chem_json_list, self.chem_list, self.name_dict = self.process_pubmed_chem_info(keyword)
+        try:
+            self.chem_json_list, self.chem_list, self.name_dict = self.process_pubmed_chem_info(keyword)
+        except TimeoutError:
+            print("Please Check Internet Connection! Retrying!")
+            self.chem_json_list, self.chem_list, self.name_dict = self.process_pubmed_chem_info(keyword)
         self.chem_matrix = self.process_matrix()
 
     def make_csv_single_chem(self, outfile=None):
         if not outfile:
-            outfile = "[frequency]" + self.keyword + ".csv"
+            outfile = "[frequency] " + self.keyword + ".csv"
         header = "Compound ID, Name, Frequency"
 
         ofile = open(outfile, 'w')
@@ -66,7 +68,7 @@ class ChemCrawler:
                     chem_list.append(chem)
                     name_dict[chem] = chem_json[chem]["substance_name"]
 
-        print("Total Number of Crawled Papers : " + str(chem_json_list))
-        print("Total Number of Chemicals : " + str(chem_list))
+        print("Total Number of Crawled Papers : " + str(len(chem_json_list)))
+        print("Total Number of Chemicals : " + str(len(chem_list)))
 
         return chem_json_list, chem_list, name_dict
