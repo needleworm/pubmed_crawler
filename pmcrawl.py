@@ -18,6 +18,48 @@ def remove_escape(string):
     return retval
 
 
+def crawl_chem_bastract(keyword, retmax=1000):
+    fetch = PubMedFetcher()
+
+    pmids = fetch.pmids_for_query(keyword, retmax=retmax)
+    print("PMID scan Done!")
+
+    json_dicts = []
+    print("Crawling Paper Info..")
+
+    for pmid in tqdm(pmids):
+        try:
+            article = fetch.article_by_pmid(pmid)
+        except:
+            print("Error reading " + str(pmid))
+            continue
+
+        chemical = article.chemicals
+        if not chemical:
+            continue
+
+        abstract = article.abstract.replace(",", "*")
+        if not abstract:
+            continue
+        elif "\t" in abstract or "\n" in abstract:
+            abstract = remove_escape(abstract)
+
+        title = article.title
+        if not title:
+            continue
+        elif "\t" in title or "\n" in title:
+            title = remove_escape(title)
+
+        chemical["title"] = title
+        chemical["abstract"] = abstract
+
+        json_dicts.append(chemical)
+
+    print("Process Done!")
+    return json_dicts
+
+
+
 def crawl_chem_json(keyword, retmax=1000):
     fetch = PubMedFetcher()
 
@@ -25,6 +67,7 @@ def crawl_chem_json(keyword, retmax=1000):
     print("PMID scan Done!")
 
     json_dicts = []
+    print("Crawling Paper Info..")
 
     for pmid in tqdm(pmids):
         try:
@@ -56,6 +99,8 @@ def crawl_abstract(keyword, outfile=None, max_iter=1000, has_chem_only=False):
 
     header = "PMID\tAuthors\tYear\tTitle\tAbstract\tURL\tCitation\tChemicals\n"
     o_file.write(header)
+
+    print("Crawling Paper Info..")
 
     for pmid in tqdm(pmids):
         article = fetch.article_by_pmid(pmid)

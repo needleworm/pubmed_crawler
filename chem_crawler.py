@@ -11,28 +11,54 @@ import itertools
 
 
 class ChemCrawler:
-    def __init__(self, keyword):
+    def __init__(self, keyword, with_abstract=False):
         self.keyword = keyword
-        try:
-            self.chem_json_list, self.chem_list, self.name_dict = self.process_pubmed_chem_info(keyword)
-        except TimeoutError:
-            print("Please Check Internet Connection! Retrying!")
-            self.chem_json_list, self.chem_list, self.name_dict = self.process_pubmed_chem_info(keyword)
+        self.with_abstract = with_abstract
+        if not self.with_abstract:
+            try:
+                self.chem_json_list, self.chem_list, self.name_dict = self.process_pubmed_chem_info(keyword)
+            except TimeoutError:
+                print("Please Check Internet Connection! Retrying!")
+                self.chem_json_list, self.chem_list, self.name_dict = self.process_pubmed_chem_info(keyword)
+        else:
+            try:
+                self.chem_json_list, self.chem_list, self.name_dict, self.title_list, self.abstract_list = \
+                    self.process_pubmed_chem_abstract_info(keyword)
+            except TimeoutError:
+                print("Please Check Internet Connection! Retrying!")
+                self.chem_json_list, self.chem_list, self.name_dict, self.title_list, self.abstract_list = \
+                    self.process_pubmed_chem_abstract_info(keyword)
+
         self.chem_matrix = self.process_matrix()
+        self.make_csv_single_chem()
 
     def make_csv_single_chem(self, outfile=None):
         if not outfile:
-            outfile = "[frequency] " + self.keyword + ".csv"
-        header = "Compound ID, Name, Frequency"
+            if self.with_abstract:
+                outfile = "[with_abstract] " + self.keyword + ".csv"
+            else:
+                outfile = "[frequency] " + self.keyword + ".csv"
+        header = ["Compound ID", "Name", "Frequency"]
 
-        ofile = open(outfile, 'w')
-        ofile.write(header)
+        if self.with_abstract:
+            header.append("Title")
+            header.append("Abstract")
+
+        ofile = open(outfile, 'w', encoding="utf8")
+        ofile.write(", ".join(header))
 
         for i in range(len(self.chem_list)):
             compound_id = self.chem_list[i]
             name = self.name_dict[compound_id].replace(",", "*")
             frequency = str(self.chem_matrix[i, i])
-            ofile.write("\n" + compound_id + ", " + name + ", " + frequency)
+            contents = [compound_id, name, frequency]
+            if self.with_abstract:
+                title = self.title_list[i]
+                abstract = self.abstract_list[i]
+                contents.append(title)
+                contents.append(abstract)
+
+            ofile.write("\n" + ", ".join(contents))
 
         ofile.close()
 
@@ -48,6 +74,8 @@ class ChemCrawler:
             IDXs = []
 
             for el in keys:
+                if el in "title abstract":
+                    continue
                 idx = self.chem_list.index(el)
                 matrix[idx, idx] += 1
                 IDXs.append(idx)
@@ -72,3 +100,26 @@ class ChemCrawler:
         print("Total Number of Chemicals : " + str(len(chem_list)))
 
         return chem_json_list, chem_list, name_dict
+
+    def process_pubmed_chem_abstract_info(self, keyword):
+        chem_json_list = P.crawl_chem_bastract(keyword)
+        chem_list = []
+        title_list = []
+        abstract_list = []
+        name_dict = {}
+
+        for chem_json in chem_json_list:
+            for key in chem_json.keys():
+                if key in "title abstract":
+                    continue
+
+                if key not in chem_list:
+                    chem_list.append(key)
+                    title_list.append(chem_json["title"])
+                    abstract_list.append(chem_json["abstract"])
+                    name_dict[key] = chem_json[key]["substance_name"]
+
+        print("Total Number of Crawled Papers : " + str(len(chem_json_list)))
+        print("Total Number of Chemicals : " + str(len(chem_list)))
+
+        return chem_json_list, chem_list, name_dict, title_list, abstract_list
