@@ -4,8 +4,8 @@ Last Modification : 2020.08.19.
 halfbottle@sangsang.farm
 https://github.com/needleworm
 """
-
 from metapub import PubMedFetcher
+from tqdm import tqdm
 
 
 def remove_escape(string):
@@ -18,7 +18,7 @@ def remove_escape(string):
     return retval
 
 
-def crawl_chem_json(keyword, retmax=1000, silence=False):
+def crawl_chem_json(keyword, retmax=1000):
     fetch = PubMedFetcher()
 
     pmids = fetch.pmids_for_query(keyword, retmax=retmax)
@@ -26,16 +26,16 @@ def crawl_chem_json(keyword, retmax=1000, silence=False):
 
     json_dicts = []
 
-    for pmid in pmids:
-        article = fetch.article_by_pmid(pmid)
-        if not article:
+    for pmid in tqdm(pmids):
+        try:
+            article = fetch.article_by_pmid(pmid)
+        except:
+            print("Error reading " + str(pmid))
             continue
 
         chemical = article.chemicals
         if not chemical:
             continue
-        if not silence:
-            print(str(chemical) + "\n")
 
         json_dicts.append(chemical)
 
@@ -57,7 +57,7 @@ def crawl_abstract(keyword, outfile=None, max_iter=1000, has_chem_only=False):
     header = "PMID\tAuthors\tYear\tTitle\tAbstract\tURL\tCitation\tChemicals\n"
     o_file.write(header)
 
-    for pmid in pmids:
+    for pmid in tqdm(pmids):
         article = fetch.article_by_pmid(pmid)
         if not article:
             continue
@@ -107,8 +107,6 @@ def crawl_abstract(keyword, outfile=None, max_iter=1000, has_chem_only=False):
             chemical = str(chemical).replace("\'", "\"")
             if "\t" in chemical or "\n" in chemical:
                 chemical = remove_escape(chemical)
-
-        print(article.citation + "\n")
 
         o_file.write(pmid + "\t")
         o_file.write(authors + "\t")

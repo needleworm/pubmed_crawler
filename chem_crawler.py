@@ -58,7 +58,7 @@ class ChemCrawler:
         return matrix
 
     def process_pubmed_chem_info(self, keyword):
-        chem_json_list = P.crawl_chem_json(keyword, silence=True)
+        chem_json_list = P.crawl_chem_json(keyword)
         chem_list = []
         name_dict = {}
 
