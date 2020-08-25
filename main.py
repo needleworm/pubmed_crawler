@@ -18,7 +18,6 @@ class WindowClass(Q.QMainWindow, ui_class[0]):
         super().__init__()
         self.setupUi(self)
 
-        self.progressBar.setValue(0)
 
         self.lineEdit.returnPressed.connect(self.button_pressed)
         self.pushButton.clicked.connect(self.button_pressed)
@@ -29,7 +28,7 @@ class WindowClass(Q.QMainWindow, ui_class[0]):
         self.textBrowser.append("Process Start!!")
         self.textBrowser.append("Keyword : " + self.keyword)
         c.ChemCrawler(self.keyword, with_abstract=self.checkBox.isChecked(),
-                      pyqt_progress_bar=self.progressBar, pyqt_text_browser=self.textBrowser)
+                      pyqt_text_browser=self.textBrowser)
 
 
 if __name__ == "__main__":

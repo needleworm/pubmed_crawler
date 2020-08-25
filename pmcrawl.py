@@ -18,7 +18,7 @@ def remove_escape(string):
     return retval
 
 
-def crawl_chem_abstract(keyword, retmax=1000, pyqt_progress_bar=None, pyqt_text_browser=None):
+def crawl_chem_abstract(keyword, retmax=300, pyqt_text_browser=None):
     fetch = PubMedFetcher()
 
     pmids = fetch.pmids_for_query(keyword, retmax=retmax)
@@ -61,8 +61,6 @@ def crawl_chem_abstract(keyword, retmax=1000, pyqt_progress_bar=None, pyqt_text_
         chemical["abstract"] = abstract
 
         json_dicts.append(chemical)
-        if pyqt_progress_bar:
-            pyqt_progress_bar.setValue(i / len(pmids))
 
     print("Process Done!")
     if pyqt_text_browser:
@@ -70,7 +68,7 @@ def crawl_chem_abstract(keyword, retmax=1000, pyqt_progress_bar=None, pyqt_text_
     return json_dicts
 
 
-def crawl_chem_json(keyword, retmax=1000, pyqt_progress_bar=None, pyqt_text_browser=None):
+def crawl_chem_json(keyword, retmax=300, pyqt_text_browser=None):
     fetch = PubMedFetcher()
 
     pmids = fetch.pmids_for_query(keyword, retmax=retmax)
@@ -97,8 +95,6 @@ def crawl_chem_json(keyword, retmax=1000, pyqt_progress_bar=None, pyqt_text_brow
             continue
 
         json_dicts.append(chemical)
-        if pyqt_progress_bar:
-            pyqt_progress_bar.setValue(i / len(pmids))
 
     print("Process Done!")
     if pyqt_text_browser:

@@ -11,10 +11,9 @@ import itertools
 
 
 class ChemCrawler:
-    def __init__(self, keyword, with_abstract=False, pyqt_progress_bar=None, pyqt_text_browser=None):
+    def __init__(self, keyword, with_abstract=False, pyqt_text_browser=None):
         self.keyword = keyword
         self.with_abstract = with_abstract
-        self.pyqt_progress_bar = pyqt_progress_bar
         self.pyqt_text_browser = pyqt_text_browser
         if not self.with_abstract:
             try:
@@ -94,7 +93,7 @@ class ChemCrawler:
         return matrix
 
     def process_pubmed_chem_info(self, keyword):
-        chem_json_list = P.crawl_chem_json(keyword, pyqt_progress_bar=self.pyqt_progress_bar, pyqt_text_browser=self.pyqt_text_browser)
+        chem_json_list = P.crawl_chem_json(keyword, pyqt_text_browser=self.pyqt_text_browser)
         chem_list = []
         name_dict = {}
 
@@ -113,8 +112,7 @@ class ChemCrawler:
         return chem_json_list, chem_list, name_dict
 
     def process_pubmed_chem_abstract_info(self, keyword):
-        chem_json_list = P.crawl_chem_abstract(keyword, pyqt_progress_bar=self.pyqt_progress_bar,
-                                               pyqt_text_browser=self.pyqt_text_browser)
+        chem_json_list = P.crawl_chem_abstract(keyword, pyqt_text_browser=self.pyqt_text_browser)
         chem_list = []
         title_list = []
         abstract_list = []
