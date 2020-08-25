@@ -11,14 +11,18 @@ import itertools
 
 
 class ChemCrawler:
-    def __init__(self, keyword, with_abstract=False):
+    def __init__(self, keyword, with_abstract=False, pyqt_progress_bar=None, pyqt_text_browser=None):
         self.keyword = keyword
         self.with_abstract = with_abstract
+        self.pyqt_progress_bar = pyqt_progress_bar
+        self.pyqt_text_browser = pyqt_text_browser
         if not self.with_abstract:
             try:
                 self.chem_json_list, self.chem_list, self.name_dict = self.process_pubmed_chem_info(keyword)
             except TimeoutError:
                 print("Please Check Internet Connection! Retrying!")
+                if self.pyqt_text_browser:
+                    self.pyqt_text_browser.append("Please Check Internet Connection! Retrying!")
                 self.chem_json_list, self.chem_list, self.name_dict = self.process_pubmed_chem_info(keyword)
         else:
             try:
@@ -26,6 +30,8 @@ class ChemCrawler:
                     self.process_pubmed_chem_abstract_info(keyword)
             except TimeoutError:
                 print("Please Check Internet Connection! Retrying!")
+                if self.pyqt_text_browser:
+                    self.pyqt_text_browser.append("Please Check Internet Connection! Retrying!")
                 self.chem_json_list, self.chem_list, self.name_dict, self.title_list, self.abstract_list = \
                     self.process_pubmed_chem_abstract_info(keyword)
 
@@ -63,6 +69,8 @@ class ChemCrawler:
         ofile.close()
 
         print("Result Saved as a CSV File")
+        if self.pyqt_text_browser:
+            self.pyqt_text_browser.append("Result Saved as a CSV File")
 
     def process_matrix(self):
         num_chem = len(self.chem_list)
@@ -86,7 +94,7 @@ class ChemCrawler:
         return matrix
 
     def process_pubmed_chem_info(self, keyword):
-        chem_json_list = P.crawl_chem_json(keyword)
+        chem_json_list = P.crawl_chem_json(keyword, pyqt_progress_bar=self.pyqt_progress_bar, pyqt_text_browser=self.pyqt_text_browser)
         chem_list = []
         name_dict = {}
 
@@ -98,11 +106,15 @@ class ChemCrawler:
 
         print("Total Number of Crawled Papers : " + str(len(chem_json_list)))
         print("Total Number of Chemicals : " + str(len(chem_list)))
+        if self.pyqt_text_browser:
+            self.pyqt_text_browser.append("Total Number of Crawled Papers : " + str(len(chem_json_list)))
+            self.pyqt_text_browser.append("Total Number of Chemicals : " + str(len(chem_list)))
 
         return chem_json_list, chem_list, name_dict
 
     def process_pubmed_chem_abstract_info(self, keyword):
-        chem_json_list = P.crawl_chem_bastract(keyword)
+        chem_json_list = P.crawl_chem_abstract(keyword, pyqt_progress_bar=self.pyqt_progress_bar,
+                                               pyqt_text_browser=self.pyqt_text_browser)
         chem_list = []
         title_list = []
         abstract_list = []
@@ -121,5 +133,8 @@ class ChemCrawler:
 
         print("Total Number of Crawled Papers : " + str(len(chem_json_list)))
         print("Total Number of Chemicals : " + str(len(chem_list)))
+        if self.pyqt_text_browser:
+            self.pyqt_text_browser.append("Total Number of Crawled Papers : " + str(len(chem_json_list)))
+            self.pyqt_text_browser.append("Total Number of Chemicals : " + str(len(chem_list)))
 
         return chem_json_list, chem_list, name_dict, title_list, abstract_list

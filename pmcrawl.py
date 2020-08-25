@@ -18,20 +18,27 @@ def remove_escape(string):
     return retval
 
 
-def crawl_chem_bastract(keyword, retmax=1000):
+def crawl_chem_abstract(keyword, retmax=1000, pyqt_progress_bar=None, pyqt_text_browser=None):
     fetch = PubMedFetcher()
 
     pmids = fetch.pmids_for_query(keyword, retmax=retmax)
+
     print("PMID scan Done!")
+    if pyqt_text_browser:
+        pyqt_text_browser.append("PMID Scan Done!")
 
     json_dicts = []
     print("Crawling Paper Info..")
+    if pyqt_text_browser:
+        pyqt_text_browser.append("Crawling Paper Info..")
 
-    for pmid in tqdm(pmids):
+    for i, pmid in enumerate(pmids):
         try:
             article = fetch.article_by_pmid(pmid)
         except:
             print("Error reading " + str(pmid))
+            if pyqt_text_browser:
+                pyqt_text_browser.append("Error reading " + str(pmid))
             continue
 
         chemical = article.chemicals
@@ -54,26 +61,35 @@ def crawl_chem_bastract(keyword, retmax=1000):
         chemical["abstract"] = abstract
 
         json_dicts.append(chemical)
+        if pyqt_progress_bar:
+            pyqt_progress_bar.setValue(i / len(pmids))
 
     print("Process Done!")
+    if pyqt_text_browser:
+        pyqt_text_browser.append("Progress Done!")
     return json_dicts
 
 
-
-def crawl_chem_json(keyword, retmax=1000):
+def crawl_chem_json(keyword, retmax=1000, pyqt_progress_bar=None, pyqt_text_browser=None):
     fetch = PubMedFetcher()
 
     pmids = fetch.pmids_for_query(keyword, retmax=retmax)
     print("PMID scan Done!")
+    if pyqt_text_browser:
+        pyqt_text_browser.append("PMID Scan Done!")
 
     json_dicts = []
     print("Crawling Paper Info..")
+    if pyqt_text_browser:
+        pyqt_text_browser.append("Crawling Paper Info..")
 
-    for pmid in tqdm(pmids):
+    for i, pmid in enumerate(pmids):
         try:
             article = fetch.article_by_pmid(pmid)
         except:
             print("Error reading " + str(pmid))
+            if pyqt_text_browser:
+                pyqt_text_browser.append("Error reading " + str(pmid))
             continue
 
         chemical = article.chemicals
@@ -81,8 +97,12 @@ def crawl_chem_json(keyword, retmax=1000):
             continue
 
         json_dicts.append(chemical)
+        if pyqt_progress_bar:
+            pyqt_progress_bar.setValue(i / len(pmids))
 
     print("Process Done!")
+    if pyqt_text_browser:
+        pyqt_text_browser.append("Progress Done!")
     return json_dicts
 
 
@@ -102,7 +122,7 @@ def crawl_abstract(keyword, outfile=None, max_iter=1000, has_chem_only=False):
 
     print("Crawling Paper Info..")
 
-    for pmid in tqdm(pmids):
+    for i, pmid in tqdm(pmids):
         article = fetch.article_by_pmid(pmid)
         if not article:
             continue
