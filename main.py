@@ -93,9 +93,9 @@ class Crawl(QThread):
     def make_csv_single_chem(self, outfile=None):
         if not outfile:
             if self.checkBox:
-                outfile = "[with_abstract] " + self.keyword + ".csv"
+                outfile = "../[with_abstract] " + self.keyword + ".csv"
             else:
-                outfile = "[frequency] " + self.keyword + ".csv"
+                outfile = "../[frequency] " + self.keyword + ".csv"
         header = ["Compound ID", "Name", "Frequency"]
 
         if self.checkBox:
