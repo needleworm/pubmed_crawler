@@ -140,9 +140,6 @@ class Crawl(QThread):
                 matrix[idx][idx] += 1
                 IDXs.append(idx)
 
-            for i, j in itertools.permutations(IDXs, 2):
-                matrix[i][j] += 1
-
         return matrix
 
     def process_pubmed_chem_info(self, keyword):
