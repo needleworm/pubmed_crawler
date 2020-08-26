@@ -9,7 +9,6 @@ from PyQt5 import uic
 from PyQt5 import QtWidgets as Q
 from PyQt5.QtCore import *
 from metapub import PubMedFetcher
-import itertools
 
 ui_class = uic.loadUiType("resources/crawler_gui.ui")
 
@@ -75,7 +74,8 @@ class Crawl(QThread):
         print("Crawling Paper Info..")
         self.textBrowser_value.emit("Crawling Paper Info..")
 
-        for i, pmid in enumerate(pmids):
+        for i in range(len(pmids)):
+            pmid = pmids[i]
             try:
                 if int(i / len(pmids) * 100) > self.count:
                     self.count = int(i / len(pmids) * 100)
@@ -221,7 +221,8 @@ class Crawl(QThread):
         print("Crawling Paper Info..")
         self.textBrowser_value.emit("Crawling Paper Info..")
 
-        for i, pmid in enumerate(pmids):
+        for i in range(len(pmids)):
+            pmid = pmids[i]
             try:
                 if int(i / len(pmids) * 100) > self.count:
                     self.count = int(i / len(pmids) * 100)

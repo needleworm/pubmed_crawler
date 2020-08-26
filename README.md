@@ -10,7 +10,7 @@ Crawling PubMed Chemical Data with Paper Abstracts
 >
 
 # Run
-Please run "PubMed Crawler.exe" in "dist/"
+Please run "PubMed Crawler.exe" in "dist/main"
 
 # Donate Ethereum
 0x20B65F0C4027345163f0A4Ee9f9d6Dd39ec957A6
