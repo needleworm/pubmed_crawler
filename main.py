@@ -10,7 +10,6 @@ from PyQt5 import QtWidgets as Q
 from PyQt5.QtCore import *
 from metapub import PubMedFetcher
 import itertools
-import numpy as np
 
 ui_class = uic.loadUiType("resources/crawler_gui.ui")
 
@@ -118,7 +117,7 @@ class Crawl(QThread):
         for i in range(len(self.chem_list)):
             compound_id = self.chem_list[i]
             name = self.name_dict[compound_id].replace(",", "*")
-            frequency = str(self.chem_matrix[i, i])
+            frequency = str(self.chem_matrix[i][i])
             contents = [compound_id, name, frequency]
             if self.checkBox:
                 title = self.title_list[i]
@@ -138,7 +137,7 @@ class Crawl(QThread):
 
     def process_matrix(self):
         num_chem = len(self.chem_list)
-        matrix = np.zeros((num_chem, num_chem), dtype=np.int)
+        matrix = [[0 for i in range(num_chem)] for j in range(num_chem)]
 
         for chem_json in self.chem_json_list:
             keys = list(chem_json.keys())
@@ -149,11 +148,11 @@ class Crawl(QThread):
                 if el in "title abstract":
                     continue
                 idx = self.chem_list.index(el)
-                matrix[idx, idx] += 1
+                matrix[idx][idx] += 1
                 IDXs.append(idx)
 
             for i, j in itertools.permutations(IDXs, 2):
-                matrix[i, j] += 1
+                matrix[i][j] += 1
 
         return matrix
 
