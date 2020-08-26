@@ -10,8 +10,21 @@
     <height>505</height>
    </rect>
   </property>
+  <property name="font">
+   <font>
+    <weight>50</weight>
+    <bold>false</bold>
+   </font>
+  </property>
   <property name="windowTitle">
    <string>[BhBan] PubMed Crawler</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="toolbar_logo.qrc">
+    <normaloff>:/newPrefix/icon.ico</normaloff>:/newPrefix/icon.ico</iconset>
+  </property>
+  <property name="toolTip">
+   <string/>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QLineEdit" name="lineEdit">
@@ -56,9 +69,9 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>70</x>
       <y>20</y>
-      <width>291</width>
+      <width>281</width>
       <height>71</height>
      </rect>
     </property>
@@ -138,7 +151,8 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources>
-  <include location="resource.qrc"/>
+  <include location="title_logo.qrc"/>
+  <include location="toolbar_logo.qrc"/>
  </resources>
  <connections/>
 </ui>

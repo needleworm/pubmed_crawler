@@ -12,7 +12,7 @@ from metapub import PubMedFetcher
 import itertools
 import numpy as np
 
-ui_class = uic.loadUiType("crawler_gui.ui")
+ui_class = uic.loadUiType("resources/crawler_gui.ui")
 
 
 class Crawl(QThread):
